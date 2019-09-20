@@ -14,8 +14,7 @@ PROJ_FOLDER_REL=${PROJ_FOLDER#$PARENT_FOLDER}
 NUMBER_NODES=$(grep -v "^#" ~/.parallel/sshloginfile | wc -l)
 FRAMES_FOLDER=${PROJ_FOLDER_REL::-1}-frames
 
-# BLENDER_EXECUTABLE="/home/invesalius/Downloads/blender-2.79-linux-glibc219-x86_64/blender"
-BLENDER_EXECUTABLE="blender"
+BLENDER_EXECUTABLE='~/bin/blender-2.80'
 
 echo $PROJ_FOLDER
 echo $BLENDER_FILENAME
@@ -35,10 +34,10 @@ seq 1 $NUMBER_NODES | parallel --slf ~/.parallel/sshloginfile --progress --workd
 echo "Transfered!"
 
 echo "Rendering"
-seq $START_FRAME $END_FRAME | parallel --slf ~/.parallel/sshloginfile --progress --workdir /tmp/blender_rendering --plus --return $FRAMES_FOLDER/{1}.$EXT_LOWER $BLENDER_EXECUTABLE --background ${PROJ_FOLDER_REL::-1}/$BLENDER_FILENAME -o "$FRAMES_FOLDER/#.$EXT_LOWER" -F $EXT -f {1}
+seq $START_FRAME $END_FRAME | parallel --slf ~/.parallel/sshloginfile --progress --workdir /tmp/blender_rendering --plus --return $FRAMES_FOLDER/{1}.$EXT_LOWER $BLENDER_EXECUTABLE --background ${PROJ_FOLDER_REL::-1}/$BLENDER_FILENAME -o "$FRAMES_FOLDER/#.$EXT_LOWER" -F $EXT -f {1} > /dev/null
 echo "Rendered"
 
-# echo "Removing files"
-# seq 1 $NUMBER_NODES | parallel --slf ~/.parallel/sshloginfile --progress --workdir /tmp/blender_rendering --plus rm -rf $PROJ_FOLDER_REL
-# seq 1 $NUMBER_NODES | parallel --slf ~/.parallel/sshloginfile --progress --workdir /tmp/blender_rendering --plus rm -rf $FRAMES_FOLDER
-# echo "Removed"
+echo "Removing files"
+seq 1 $NUMBER_NODES | parallel --slf ~/.parallel/sshloginfile --progress --workdir /tmp/blender_rendering --plus rm -rf $PROJ_FOLDER_REL
+seq 1 $NUMBER_NODES | parallel --slf ~/.parallel/sshloginfile --progress --workdir /tmp/blender_rendering --plus rm -rf $FRAMES_FOLDER
+echo "Removed"
